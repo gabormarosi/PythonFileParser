@@ -14,9 +14,9 @@ objects:
     name: parser-config
   data:
     parser.path: "/etc/pythonparser/trx.csv"
-    parser.hostname: "rabbitmq.mkb-rtd.svc"
+    parser.hostname: "rabbitmq.$(NAMESPACE).svc"
     parser.port: "5672"
-    parser.queue.name: "rtd.dwh.pyparser"
+    parser.queue.name: "mg.pyparser"
 - apiVersion: v1
   kind: Secret
   metadata:
