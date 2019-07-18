@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: parser-config-template
+  annotations:
+    description: "parser-config-template"
+labels:
+  template: "parser-config-template"
+  template-version: "1.0.0"
+objects:
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: parser-config
+  data:
+    parser.path: "/etc/pythonparser/trx.csv"
+    parser.hostname: "rabbitmq.mkb-rtd.svc"
+    parser.port: "5672"
+    parser.queue.name: "rtd.dwh.pyparser"
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    name: parser-secret
+  stringData:
+    parser.username: "guest"
+    parser: "guest"

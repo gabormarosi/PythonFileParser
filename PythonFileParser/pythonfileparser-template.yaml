@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: parser-template
+  annotations:
+    description: "parser-template"
+labels:
+  template: "parser-template"
+  template-version: "1.0.0"
+objects:
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    labels:
+      io.kompose.service: parser-claim
+    name: parser-claim
+  spec:
+    accessModes:
+    - ReadWriteMany
+    resources:
+      requests:
+        storage: 1Gi
+    storageClassName: "mkbpyparser"
+  status: {}
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      app: python-file-parser
+    name: python-file-parser
+  spec:
+    replicas: 1
+    selector:
+      app: python-file-parser
+    strategy:
+      rollingUpdate:
+        maxSurge: 1
+        maxUnavailable: 1
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          app: python-file-parser
+      spec:
+        containers:
+          - image: docker-registry.default.svc:5000/pythonfileparser:latest
+            name: python-file-parser
+            ports: {}
+            volumeMounts:
+              - mountPath: /etc/pythonparser
+                name: pythonparser
+            env:
+              - name: PARSER_PATH
+                valueFrom:
+                  configMapKeyRef:
+                    name: parser-config
+                    key: parser.path
+              - name: PARSER_HOSTNAME
+                valueFrom:
+                  configMapKeyRef:
+                    name: parser-config
+                    key: parser.hostname
+              - name: PARSER_PORT
+                valueFrom:
+                  configMapKeyRef:
+                    name: parser-config
+                    key: parser.port
+              - name: PARSER_QUEUE_NAME
+                valueFrom:
+                  configMapKeyRef:
+                    name: parser-config
+                    key: parser.queue.name
+              - name: PARSER_USERNAME
+                valueFrom:
+                  secretKeyRef:
+                    name: parser-secret
+                    key: parser.username
+              - name: PARSER_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: parser-secret
+                    key: parser.password
+            volumes:
+            - name: file2mq
+              persistentVolumeClaim:
+                claimName: parser-claim
+        restartPolicy: Always
