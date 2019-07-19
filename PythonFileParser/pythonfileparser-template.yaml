@@ -20,7 +20,7 @@ objects:
     resources:
       requests:
         storage: 1Gi
-    storageClassName: "mkbpyparser"
+    storageClassName: "parser-pv"
   status: {}
 - apiVersion: v1
   kind: DeploymentConfig
